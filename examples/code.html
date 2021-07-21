@@ -1,0 +1,64 @@
+<head>
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+  <script src="./dist/timeline.js"></script>
+  <style>
+    pre {
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+</head>
+
+<h1>Terminal</h1>
+<div class="p-4 hidden" id="controls">
+  <button onclick="document.getElementById('terminal').innerHTML = ''; terminalTimeline.play()">Replay</button>
+</div>
+<pre id="terminal" class="font-mono text-xs p-4">
+</pre>
+
+<script>
+  const terminalTimeline = timeline({
+    autoplay: false,
+    target: 'terminal',
+  });
+
+  terminalTimeline.addOnComplete({
+    event: () => {
+      document.getElementById('controls').className = "p-4";
+    }
+  });
+
+  terminalTimeline.addOnStepComplete({
+    event: (event) => {
+      console.log({ event });
+    }
+  })
+
+  terminalTimeline
+    .add({
+      input: `
+      const { SuperfaceClient } = require('@superfaceai/one-sdk');
+
+const sdk = new SuperfaceClient();
+
+// Load the installed profile
+const profile = await sdk.getProfile('communication/send-email');
+
+// Use the profile
+const result = await profile
+.getUseCase('SendEmail')
+.perform({ 
+   from: 'hello@superface.ai',
+   to: 'joe@doe.com',
+   subject: 'Hey Joe!',
+   text: 'Still struggling with email?',
+   html: '<p>Still struggling with email?</p>'
+});
+      `,
+      animated: true,
+      characterSpeed: 20,
+    })
+
+  terminalTimeline.play();
+
+</script>
